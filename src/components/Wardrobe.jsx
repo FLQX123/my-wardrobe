@@ -1615,7 +1615,7 @@ const showToast = (msg) => {
                         {!isLogisticsManageMode && onDeleteLogisticsItem && (
                           <button
                             onClick={(e) => { e.stopPropagation(); onDeleteLogisticsItem(cloth.id) }}
-                            className={`absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-white/80 shadow-sm flex items-center justify-center transition-all duration-200 text-gray-400 z-30 ${isTouchDevice ? (longPressedId === cloth.id ? 'opacity-100 !bg-red-400/80 !text-white scale-110 pointer-events-auto' : 'opacity-50 pointer-events-none') : 'opacity-50 group-hover:opacity-100 group-hover:!bg-red-400/80 group-hover:!text-white group-hover:scale-110'}`}
+                            className={`absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-white/80 shadow-sm flex items-center justify-center transition-all duration-200 text-gray-400 z-30 ${isTouchDevice ? (longPressedId === cloth.id ? 'opacity-100 !bg-red-400/80 !text-white scale-110 pointer-events-auto' : 'opacity-50 pointer-events-auto') : 'opacity-50 group-hover:opacity-100 group-hover:!bg-red-400/80 group-hover:!text-white group-hover:scale-110'}`}
                             title="删除"
                           >
                             <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
