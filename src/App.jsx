@@ -888,7 +888,7 @@ export default function App() {
         <div className="w-[3px] h-full bg-gray-300/50 group-hover:bg-blue-400/60 transition-colors duration-200 pointer-events-none rounded-full" />
       </div>
       <div className="flex-1 h-full flex min-w-0 relative">
-        <div className="flex-1 h-full min-w-0 overflow-auto">
+        <div className="flex-1 min-w-0 min-h-0 overflow-auto">
           <Canvas
             selectedClothes={selectedClothes} onRemoveCloth={handleRemoveCloth}
             onBatchRemove={handleBatchRemove} onSaveOutfit={handleCanvasAction}
