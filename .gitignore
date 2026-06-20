@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+.claude/
+elder_video_app/
+generate-icons.cjs
