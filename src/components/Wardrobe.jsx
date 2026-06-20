@@ -99,6 +99,10 @@ export default function Wardrobe({
   const [selectedItems, setSelectedItems] = useState([])
   const [isOutfitManageMode, setIsOutfitManageMode] = useState(false)
   const [selectedOutfits, setSelectedOutfits] = useState([])
+  const [isLogisticsManageMode, setIsLogisticsManageMode] = useState(false)
+  const [selectedLogistics, setSelectedLogistics] = useState([])
+  const [isShootingManageMode, setIsShootingManageMode] = useState(false)
+  const [selectedShootingOutfits, setSelectedShootingOutfits] = useState([])
 
   const [editingClothCat, setEditingClothCat] = useState(null)
   const [editingClothCatName, setEditingClothCatName] = useState('')
@@ -453,6 +457,44 @@ const showToast = (msg) => {
     if (onBatchDeleteOutfits) onBatchDeleteOutfits(selectedOutfits)
     setSelectedOutfits([])
     setIsOutfitManageMode(false)
+  }
+
+  const handleToggleLogisticsManage = () => {
+    if (isLogisticsManageMode) { setIsLogisticsManageMode(false); setSelectedLogistics([]) }
+    else setIsLogisticsManageMode(true)
+  }
+
+  const handleToggleSelectLogistics = (e, clothId) => {
+    if (e && e.stopPropagation) e.stopPropagation()
+    setSelectedLogistics(prev =>
+      prev.includes(clothId) ? prev.filter(id => id !== clothId) : [...prev, clothId]
+    )
+  }
+
+  const handleBatchDeleteLogistics = () => {
+    if (selectedLogistics.length === 0) return
+    if (onBatchDeleteClothes) onBatchDeleteClothes(selectedLogistics)
+    setSelectedLogistics([])
+    setIsLogisticsManageMode(false)
+  }
+
+  const handleToggleShootingManage = () => {
+    if (isShootingManageMode) { setIsShootingManageMode(false); setSelectedShootingOutfits([]) }
+    else setIsShootingManageMode(true)
+  }
+
+  const handleToggleSelectShooting = (e, outfitId) => {
+    if (e && e.stopPropagation) e.stopPropagation()
+    setSelectedShootingOutfits(prev =>
+      prev.includes(outfitId) ? prev.filter(id => id !== outfitId) : [...prev, outfitId]
+    )
+  }
+
+  const handleBatchDeleteShooting = () => {
+    if (selectedShootingOutfits.length === 0) return
+    if (onBatchDeleteOutfits) onBatchDeleteOutfits(selectedShootingOutfits)
+    setSelectedShootingOutfits([])
+    setIsShootingManageMode(false)
   }
 
   const startEditClothCat = (cat) => {
@@ -898,7 +940,7 @@ const showToast = (msg) => {
                   </>
                 ) : (
                   <>
-                    <button onClick={handleToggleManage} onTouchEnd={(e) => e.preventDefault()} className="px-2.5 py-1.5 rounded-lg text-[11px] tracking-wide text-gray-400 hover:text-gray-600 hover:bg-gray-100/50 transition-all duration-200">
+                    <button onClick={handleToggleManage} onTouchStart={(e) => e.stopPropagation()} className="px-2.5 py-1.5 rounded-lg text-[11px] tracking-wide text-gray-400 hover:text-gray-600 hover:bg-gray-100/50 transition-all duration-200">
                       管理
                     </button>
                     {activeCategory === '全部' ? (
@@ -1080,7 +1122,7 @@ const showToast = (msg) => {
                     </button>
                   </>
                 ) : (
-                  <button onClick={handleToggleOutfitManage} onTouchEnd={(e) => e.preventDefault()} className="px-2.5 py-1.5 rounded-lg text-[11px] tracking-wide text-gray-400 hover:text-gray-600 hover:bg-gray-100/50 transition-all duration-200">
+                  <button onClick={handleToggleOutfitManage} onTouchStart={(e) => e.stopPropagation()} className="px-2.5 py-1.5 rounded-lg text-[11px] tracking-wide text-gray-400 hover:text-gray-600 hover:bg-gray-100/50 transition-all duration-200">
                     管理
                   </button>
                 )}
@@ -1303,29 +1345,62 @@ const showToast = (msg) => {
               <h2 className="text-xs tracking-widest uppercase text-gray-400 font-medium">待拍摄</h2>
               <span className="text-[11px] text-gray-300">{filteredShotOutfits.length} 套</span>
             </div>
+            <div className="flex items-center gap-2">
+              {isShootingManageMode ? (
+                <>
+                  {selectedShootingOutfits.length > 0 && (
+                    <button onClick={handleBatchDeleteShooting} className="px-3 py-1.5 rounded-lg text-xs tracking-wide text-red-500 hover:bg-red-50/50 transition-all duration-200 font-medium">
+                      删除 ({selectedShootingOutfits.length})
+                    </button>
+                  )}
+                  <button onClick={handleToggleShootingManage} className="px-3 py-1.5 rounded-lg text-xs tracking-wide text-gray-500 hover:bg-gray-100/50 hover:text-gray-700 transition-all duration-200">
+                    取消
+                  </button>
+                </>
+              ) : (
+                <button onClick={handleToggleShootingManage} onTouchStart={(e) => e.stopPropagation()} className="px-2.5 py-1.5 rounded-lg text-[11px] tracking-wide text-gray-400 hover:text-gray-600 hover:bg-gray-100/50 transition-all duration-200">
+                  管理
+                </button>
+              )}
+            </div>
           </div>
           <div className="flex-1 overflow-y-auto p-3 subtle-scroll">
             {filteredShotOutfits.length > 0 ? (
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
                 {filteredShotOutfits.map((outfit) => {
                   const isShooting = shotOutfitIds.current.has(outfit.id)
+                  const isSelected = selectedShootingOutfits.includes(outfit.id)
                   return (
                     <div key={outfit.id} className={`relative group transition-all duration-300 ${isShooting ? 'opacity-0 scale-90' : ''}`}>
                       <div
-                        onClick={() => handleSelectOutfitFromShooting(outfit)}
-                        className="aspect-square bg-white/60 backdrop-blur-sm rounded-xl overflow-hidden border border-white/50 cursor-pointer hover:shadow-lg hover:scale-[1.03] transition-all duration-300"
+                        onClick={() => isShootingManageMode ? handleToggleSelectShooting(null, outfit.id) : handleSelectOutfitFromShooting(outfit)}
+                        className={`aspect-square bg-white/60 backdrop-blur-sm rounded-xl overflow-hidden border cursor-pointer transition-all duration-300 ${isShootingManageMode && isSelected ? 'border-gray-800 ring-[2px] ring-gray-800/40 bg-white/40' : 'border-white/50 hover:shadow-lg hover:scale-[1.03]'}`}
                       >
-                        <img src={outfit.screenshot} alt={outfit.name} className="w-full h-full object-contain" draggable={false} />
+                        {isShootingManageMode && isSelected && (
+                          <div className="absolute inset-0 bg-black/10 rounded-xl z-[2]" />
+                        )}
+                        <img src={outfit.screenshot} alt={outfit.name} className="w-full h-full object-contain relative z-[1]" draggable={false} />
                       </div>
-                      <div className="mt-1 flex gap-1">
+                      {isShootingManageMode ? (
                         <button
-                          onClick={(e) => { e.stopPropagation(); handleMarkShot(outfit.id) }}
-                          className="flex-1 py-1 rounded-lg text-[10px] tracking-wide bg-amber-400/20 text-amber-700 hover:bg-amber-400/40 transition-all duration-200"
+                          onClick={() => handleToggleSelectShooting(null, outfit.id)}
+                          className={`absolute top-1.5 left-1.5 w-[22px] h-[22px] rounded-[5px] flex items-center justify-center z-10 transition-all duration-200 ${isSelected ? 'bg-gray-800 text-white' : 'bg-white/80 border-2 border-gray-300/60 text-transparent hover:border-gray-400'}`}
                         >
-                          <svg className="w-3 h-3 inline mr-0.5 -mt-[1px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                          完成拍摄
+                          {isSelected && (
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+                          )}
                         </button>
-                      </div>
+                      ) : (
+                        <div className="mt-1 flex gap-1">
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleMarkShot(outfit.id) }}
+                            className="flex-1 py-1 rounded-lg text-[10px] tracking-wide bg-amber-400/20 text-amber-700 hover:bg-amber-400/40 transition-all duration-200"
+                          >
+                            <svg className="w-3 h-3 inline mr-0.5 -mt-[1px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                            完成拍摄
+                          </button>
+                        </div>
+                      )}
                     </div>
                   )
                 })}
@@ -1437,9 +1512,22 @@ const showToast = (msg) => {
                 </button>
               </div>
               <div className="flex items-center gap-2 flex-shrink-0">
-                <button className="px-2.5 py-1.5 rounded-lg text-[11px] tracking-wide text-gray-400 hover:text-gray-600 hover:bg-gray-100/50 transition-all duration-200">
-                  管理
-                </button>
+                {isLogisticsManageMode ? (
+                  <>
+                    {selectedLogistics.length > 0 && (
+                      <button onClick={handleBatchDeleteLogistics} className="px-3 py-1.5 rounded-lg text-xs tracking-wide text-red-500 hover:bg-red-50/50 transition-all duration-200 font-medium">
+                        删除 ({selectedLogistics.length})
+                      </button>
+                    )}
+                    <button onClick={handleToggleLogisticsManage} className="px-3 py-1.5 rounded-lg text-xs tracking-wide text-gray-500 hover:bg-gray-100/50 hover:text-gray-700 transition-all duration-200">
+                      取消
+                    </button>
+                  </>
+                ) : (
+                  <button onClick={handleToggleLogisticsManage} onTouchStart={(e) => e.stopPropagation()} className="px-2.5 py-1.5 rounded-lg text-[11px] tracking-wide text-gray-400 hover:text-gray-600 hover:bg-gray-100/50 transition-all duration-200">
+                    管理
+                  </button>
+                )}
                 <button
                   onClick={() => setShowImportModal(true)}
                   className={isPortraitMode
@@ -1498,7 +1586,8 @@ const showToast = (msg) => {
                 <div className={isPortraitMode ? 'grid grid-cols-3 gap-2' : 'grid grid-cols-2 gap-2.5'}>
                   {logisticsFilteredClothes.map((cloth) => {
                     const isAnimating = importAnimatingIds.includes(cloth.id)
-                    const canDrag = logisticsFilter === '全部' || logisticsFilter === '待买'
+                    const isLogisticsSelected = selectedLogistics.includes(cloth.id)
+                    const canDrag = !isLogisticsManageMode && (logisticsFilter === '全部' || logisticsFilter === '待买')
                     return (
                       <div key={cloth.id}
                         draggable={canDrag}
@@ -1507,9 +1596,23 @@ const showToast = (msg) => {
                         onTouchStart={canDrag ? undefined : (e) => handleCardTouchStart(e, cloth.id)}
                         onTouchMove={canDrag ? undefined : handleCardTouchMove}
                         onTouchEnd={canDrag ? undefined : handleCardTouchEnd}
-                        className={`relative ${isTouchDevice ? '' : 'group'} bg-white/60 backdrop-blur-sm rounded-xl border border-white/50 hover:shadow-md transition-all duration-300 overflow-hidden ${isAnimating ? 'opacity-0 scale-75' : ''} ${canDrag ? 'cursor-grab active:cursor-grabbing' : ''}`}
+                        onClick={isLogisticsManageMode ? (e) => handleToggleSelectLogistics(e, cloth.id) : undefined}
+                        className={`relative ${isTouchDevice ? '' : 'group'} bg-white/60 backdrop-blur-sm rounded-xl border transition-all duration-300 overflow-hidden ${isAnimating ? 'opacity-0 scale-75' : ''} ${canDrag ? 'cursor-grab active:cursor-grabbing' : ''} ${isLogisticsManageMode ? (isLogisticsSelected ? 'border-gray-800 ring-[2px] ring-gray-800/40 bg-white/40 cursor-pointer' : 'border-white/50 hover:shadow-md cursor-pointer') : 'border-white/50 hover:shadow-md'}`}
                       >
-                        {onDeleteLogisticsItem && (
+                        {isLogisticsManageMode && (
+                          <button
+                            onClick={(e) => handleToggleSelectLogistics(e, cloth.id)}
+                            className={`absolute top-1.5 left-1.5 w-[22px] h-[22px] rounded-[5px] flex items-center justify-center z-10 transition-all duration-200 ${isLogisticsSelected ? 'bg-gray-800 text-white' : 'bg-white/80 border-2 border-gray-300/60 text-transparent hover:border-gray-400'}`}
+                          >
+                            {isLogisticsSelected && (
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+                            )}
+                          </button>
+                        )}
+                        {isLogisticsManageMode && isLogisticsSelected && (
+                          <div className="absolute inset-0 bg-black/10 rounded-xl z-[2]" />
+                        )}
+                        {!isLogisticsManageMode && onDeleteLogisticsItem && (
                           <button
                             onClick={(e) => { e.stopPropagation(); onDeleteLogisticsItem(cloth.id) }}
                             className={`absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-white/80 shadow-sm flex items-center justify-center transition-all duration-200 text-gray-400 z-30 ${isTouchDevice ? (longPressedId === cloth.id ? 'opacity-100 !bg-red-400/80 !text-white scale-110 pointer-events-auto' : 'opacity-50 pointer-events-none') : 'opacity-50 group-hover:opacity-100 group-hover:!bg-red-400/80 group-hover:!text-white group-hover:scale-110'}`}
@@ -1519,8 +1622,9 @@ const showToast = (msg) => {
                           </button>
                         )}
                         <div className="aspect-square bg-white/40 flex items-center justify-center p-3">
-                          <img src={cloth.image} alt={cloth.name} className="max-w-full max-h-full object-contain" draggable={false} />
+                          <img src={cloth.image} alt={cloth.name} className="max-w-full max-h-full object-contain relative z-[1]" draggable={false} />
                         </div>
+                        {!isLogisticsManageMode && (
                         <div className="px-3 pb-3 pt-0">
                           {/* Row 1: Price + Status */}
                           <div className="flex items-center gap-2 pt-2">
@@ -1585,6 +1689,7 @@ const showToast = (msg) => {
                             )}
                           </div>
                         </div>
+                        )}
                       </div>
                     )
                   })}
