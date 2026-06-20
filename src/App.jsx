@@ -880,8 +880,8 @@ export default function App() {
         />
       </div>
       <div
-        className="w-[24px] h-full cursor-col-resize relative z-30 flex-shrink-0 group flex items-center justify-center"
-        style={{ touchAction: 'none', backgroundColor: 'rgba(255,0,0,0.15)' }}
+        className="w-[20px] h-full cursor-col-resize relative z-30 flex-shrink-0 group flex items-center justify-center"
+        style={{ touchAction: 'none' }}
         onMouseDown={handleWardrobePanelResizeStart}
         onTouchStart={handleWardrobePanelResizeStart}
       >
@@ -904,8 +904,8 @@ export default function App() {
         {relatedPanelOpen && (
           <>
             <div
-              className="w-[24px] h-full cursor-col-resize relative z-30 flex-shrink-0 group flex items-center justify-center"
-              style={{ touchAction: 'none', backgroundColor: 'rgba(255,0,0,0.15)' }}
+              className="w-[20px] h-full cursor-col-resize relative z-30 flex-shrink-0 group flex items-center justify-center"
+              style={{ touchAction: 'none' }}
               onMouseDown={handlePanelResizeStart}
               onTouchStart={handlePanelResizeStart}
             >

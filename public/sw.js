@@ -1,7 +1,7 @@
 // Service Worker for "我的虚拟衣橱" PWA
 // Cache-First strategy for App Shell and static assets
 
-const CACHE_NAME = 'mywardrobe-v2'
+const CACHE_NAME = 'mywardrobe-v3'
 // Precache everything needed for offline
 const APP_SHELL = [
   '/my-wardrobe/',
