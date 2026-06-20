@@ -240,7 +240,7 @@ export default function Canvas({
   const handleClass = 'react-rnd-handle'
 
   return (
-    <div className="h-full flex flex-col glass-card gallery-shadow rounded-3xl m-2 overflow-hidden">
+    <div className="h-full flex flex-col glass-card gallery-shadow rounded-3xl mx-2 mt-2 overflow-hidden">
       <div ref={containerRef} className="flex-1 relative overflow-auto dotted-grid select-none"
         onMouseDown={handleCanvasPointerDown} onTouchStart={handleCanvasPointerDown} onClick={handleCanvasClick}>
         <div ref={canvasRef} className="relative w-full" style={{ minHeight: canvasMinHeight || undefined, touchAction: 'manipulation' }}>
