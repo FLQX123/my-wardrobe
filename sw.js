@@ -4,11 +4,11 @@
 const CACHE_NAME = 'mywardrobe-v2'
 // Precache everything needed for offline
 const APP_SHELL = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/icons/wardrobe-192.png',
-  '/icons/wardrobe-512.png',
+  '/my-wardrobe/',
+  '/my-wardrobe/index.html',
+  '/my-wardrobe/manifest.json',
+  '/my-wardrobe/icons/wardrobe-192.png',
+  '/my-wardrobe/icons/wardrobe-512.png',
 ]
 
 // Install: pre-cache the app shell
