@@ -231,10 +231,10 @@ export default function Canvas({
   }, [selectedIds, selectedClothes, onBatchPositionChange, onClothPositionChange])
 
   const touchResizeStyles = {
-    bottomLeft: { width: 24, height: 24 },
-    bottomRight: { width: 24, height: 24 },
-    topLeft: { width: 24, height: 24 },
-    topRight: { width: 24, height: 24 },
+    bottomLeft: { width: 32, height: 32 },
+    bottomRight: { width: 32, height: 32 },
+    topLeft: { width: 32, height: 32 },
+    topRight: { width: 32, height: 32 },
   }
 
   const handleClass = 'react-rnd-handle'
@@ -262,10 +262,10 @@ export default function Canvas({
                   enableResizing={true}
                   resizeHandleStyles={touchResizeStyles}
                   resizeHandleComponent={{
-                    bottomLeft: <div className={`${handleClass} rnd-resize-handle`} style={{ touchAction: 'none' }} />,
-                    bottomRight: <div className={`${handleClass} rnd-resize-handle`} style={{ touchAction: 'none' }} />,
-                    topLeft: <div className={`${handleClass} rnd-resize-handle`} style={{ touchAction: 'none' }} />,
-                    topRight: <div className={`${handleClass} rnd-resize-handle`} style={{ touchAction: 'none' }} />,
+                    bottomLeft: <div style={{ width: 10, height: 10, background: 'rgba(184, 173, 160, 0.7)', borderRadius: '50%', border: '2px solid white', boxShadow: '0 1px 3px rgba(0,0,0,0.15)', pointerEvents: 'auto' }} />,
+                    bottomRight: <div style={{ width: 10, height: 10, background: 'rgba(184, 173, 160, 0.7)', borderRadius: '50%', border: '2px solid white', boxShadow: '0 1px 3px rgba(0,0,0,0.15)', pointerEvents: 'auto' }} />,
+                    topLeft: <div style={{ width: 10, height: 10, background: 'rgba(184, 173, 160, 0.7)', borderRadius: '50%', border: '2px solid white', boxShadow: '0 1px 3px rgba(0,0,0,0.15)', pointerEvents: 'auto' }} />,
+                    topRight: <div style={{ width: 10, height: 10, background: 'rgba(184, 173, 160, 0.7)', borderRadius: '50%', border: '2px solid white', boxShadow: '0 1px 3px rgba(0,0,0,0.15)', pointerEvents: 'auto' }} />,
                   }}
                   onDragStart={(e, d) => handleBatchDragStart(cloth.instanceId, e)}
                   onDrag={(e, d) => handleBatchDrag(cloth.instanceId, e, d)}
