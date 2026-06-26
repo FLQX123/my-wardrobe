@@ -230,25 +230,11 @@ export default function Canvas({
     if (onClothPositionChange) onClothPositionChange(instanceId, { x: position.x, y: position.y, width: ref.offsetWidth, height: ref.offsetHeight })
   }, [selectedIds, selectedClothes, onBatchPositionChange, onClothPositionChange])
 
-  const handleZoom = useCallback((instanceId, factor) => {
-    const cloth = selectedClothes.find(c => c.instanceId === instanceId)
-    if (!cloth) return
-    const currW = cloth.width !== undefined ? cloth.width : 220
-    const currH = cloth.height !== undefined ? cloth.height : 260
-    const maxW = isPortrait ? 350 : 500
-    const maxH = isPortrait ? 420 : 600
-    const newW = Math.max(50, Math.min(maxW, Math.round(currW * factor)))
-    const newH = Math.max(50, Math.min(maxH, Math.round(currH * factor)))
-    const cx = (cloth.x !== undefined ? cloth.x : 150) + currW / 2
-    const cy = (cloth.y !== undefined ? cloth.y : 150) + currH / 2
-    onClothPositionChange(instanceId, { x: cx - newW / 2, y: cy - newH / 2, width: newW, height: newH })
-  }, [selectedClothes, isPortrait, onClothPositionChange])
-
   const touchResizeStyles = {
-    bottomLeft: { width: 32, height: 32, touchAction: 'none' },
-    bottomRight: { width: 32, height: 32, touchAction: 'none' },
-    topLeft: { width: 32, height: 32, touchAction: 'none' },
-    topRight: { width: 32, height: 32, touchAction: 'none' },
+    bottomLeft: { width: 24, height: 24 },
+    bottomRight: { width: 24, height: 24 },
+    topLeft: { width: 24, height: 24 },
+    topRight: { width: 24, height: 24 },
   }
 
   const handleClass = 'react-rnd-handle'
@@ -276,10 +262,10 @@ export default function Canvas({
                   enableResizing={true}
                   resizeHandleStyles={touchResizeStyles}
                   resizeHandleComponent={{
-                    bottomLeft: <div style={{ width: 10, height: 10, background: 'rgba(184, 173, 160, 0.7)', borderRadius: '50%', border: '2px solid white', boxShadow: '0 1px 3px rgba(0,0,0,0.15)', pointerEvents: 'auto' }} />,
-                    bottomRight: <div style={{ width: 10, height: 10, background: 'rgba(184, 173, 160, 0.7)', borderRadius: '50%', border: '2px solid white', boxShadow: '0 1px 3px rgba(0,0,0,0.15)', pointerEvents: 'auto' }} />,
-                    topLeft: <div style={{ width: 10, height: 10, background: 'rgba(184, 173, 160, 0.7)', borderRadius: '50%', border: '2px solid white', boxShadow: '0 1px 3px rgba(0,0,0,0.15)', pointerEvents: 'auto' }} />,
-                    topRight: <div style={{ width: 10, height: 10, background: 'rgba(184, 173, 160, 0.7)', borderRadius: '50%', border: '2px solid white', boxShadow: '0 1px 3px rgba(0,0,0,0.15)', pointerEvents: 'auto' }} />,
+                    bottomLeft: <div className={`${handleClass} rnd-resize-handle`} style={{ touchAction: 'none' }} />,
+                    bottomRight: <div className={`${handleClass} rnd-resize-handle`} style={{ touchAction: 'none' }} />,
+                    topLeft: <div className={`${handleClass} rnd-resize-handle`} style={{ touchAction: 'none' }} />,
+                    topRight: <div className={`${handleClass} rnd-resize-handle`} style={{ touchAction: 'none' }} />,
                   }}
                   onDragStart={(e, d) => handleBatchDragStart(cloth.instanceId, e)}
                   onDrag={(e, d) => handleBatchDrag(cloth.instanceId, e, d)}
@@ -290,20 +276,6 @@ export default function Canvas({
                     style={{ transform: cloth.flipped ? 'scaleX(-1)' : 'none' }}>
                     <img src={cloth.image} alt={cloth.name} className="w-full h-full object-contain pointer-events-none" draggable={false} />
                   </div>
-                  {isSelected && (
-                    <div className="absolute bottom-1 right-1 flex items-center gap-1 z-10">
-                      <button
-                        onClick={(e) => { e.stopPropagation(); handleZoom(cloth.instanceId, 0.9) }}
-                        className="w-[28px] h-[28px] rounded-full bg-gray-500/60 hover:bg-gray-600/80 text-white text-sm flex items-center justify-center leading-none transition-all"
-                        title="缩小"
-                      >−</button>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); handleZoom(cloth.instanceId, 1.1) }}
-                        className="w-[28px] h-[28px] rounded-full bg-gray-500/60 hover:bg-gray-600/80 text-white text-sm flex items-center justify-center leading-none transition-all"
-                        title="放大"
-                      >+</button>
-                    </div>
-                  )}
                 </Rnd>
               )
             })
