@@ -210,7 +210,6 @@ export default function App() {
     const newSelected = [...selectedClothes, newItem]
     setSelectedClothes(newSelected)
     setSelectedIds([])
-    setCurrentEditingOutfitId(null)
     pushHistory(newSelected)
     setSelectedPanelCloth(cloth)
   }
