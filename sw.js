@@ -1,17 +1,23 @@
 // Service Worker for "我的虚拟衣橱" PWA
-// Stale-While-Revalidate: serve cached instantly, update cache in background
+// Cache-First strategy for App Shell and static assets
 
-const CACHE_NAME = 'mywardrobe-v4'
+const CACHE_NAME = 'mywardrobe-v3'
+// Precache everything needed for offline
+const APP_SHELL = [
+  '/my-wardrobe/',
+  '/my-wardrobe/index.html',
+  '/my-wardrobe/manifest.json',
+  '/my-wardrobe/icons/wardrobe-192.png',
+  '/my-wardrobe/icons/wardrobe-512.png',
+]
 
 // Install: pre-cache the app shell
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll([
-        '/my-wardrobe/',
-        '/my-wardrobe/index.html',
-        '/my-wardrobe/manifest.json',
-      ]).catch(() => {})
+      return cache.addAll(APP_SHELL).catch(() => {
+        // Silently skip if some files can't be pre-cached (e.g. dev mode)
+      })
     }).then(() => self.skipWaiting())
   )
 })
@@ -27,42 +33,65 @@ self.addEventListener('activate', (event) => {
   )
 })
 
-// Fetch: Stale-While-Revalidate
+// Fetch: Cache-First strategy
 self.addEventListener('fetch', (event) => {
   const { request } = event
 
+  // Only handle GET requests
   if (request.method !== 'GET') return
-  if (!request.url.startsWith('http')) return
-  if (request.url.includes('/@vite/') || request.url.includes('/@fs/') ||
-      request.url.includes('__vite_ping') || request.url.includes('hmr') ||
-      request.url.includes('hot-update')) return
-  if (!request.url.startsWith(self.location.origin)) return
 
-  // For navigation requests (HTML): Network-First, fallback to cache
-  if (request.mode === 'navigate') {
-    event.respondWith(
-      fetch(request).then((response) => {
-        const cloned = response.clone()
-        caches.open(CACHE_NAME).then((cache) => cache.put(request, cloned))
-        return response
-      }).catch(() => caches.match(request))
-    )
+  // Skip non-http(s) requests (e.g. chrome-extension://)
+  if (!request.url.startsWith('http')) return
+
+  // Skip Vite HMR and internal dev requests
+  if (request.url.includes('/@vite/') ||
+      request.url.includes('/@fs/') ||
+      request.url.includes('__vite_ping') ||
+      request.url.includes('hmr') ||
+      request.url.includes('hot-update')) {
     return
   }
 
-  // For all other assets: Stale-While-Revalidate
-  event.respondWith(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.match(request).then((cached) => {
-        const fetchPromise = fetch(request).then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200) {
-            cache.put(request, networkResponse.clone())
-          }
-          return networkResponse
-        }).catch(() => cached)
+  // Skip browser extensions
+  if (!request.url.startsWith(self.location.origin)) {
+    // Still cache same-origin only for safety
+    return
+  }
 
-        // Return cached immediately, update in background
-        return cached || fetchPromise
+  event.respondWith(
+    caches.match(request).then((cached) => {
+      // Return cached response immediately if found
+      if (cached) return cached
+
+      // Otherwise fetch from network and cache
+      return fetch(request).then((response) => {
+        if (!response || response.status !== 200 || response.type !== 'basic') {
+          return response
+        }
+
+        // Cache eligible responses (JS, CSS, HTML, images, fonts, icons)
+        const url = request.url
+        const isCacheable = /\.(js|css|html|png|jpg|jpeg|gif|svg|ico|woff2?|ttf|json)$/.test(url) ||
+                            request.destination === 'document' ||
+                            request.destination === 'script' ||
+                            request.destination === 'style' ||
+                            request.destination === 'image' ||
+                            request.destination === 'font'
+
+        if (isCacheable) {
+          const cloned = response.clone()
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(request, cloned)
+          })
+        }
+
+        return response
+      }).catch(() => {
+        // Offline fallback for navigation requests
+        if (request.destination === 'document') {
+          return caches.match('/index.html')
+        }
+        // For other requests, just fail (will show browser offline page)
       })
     })
   )
