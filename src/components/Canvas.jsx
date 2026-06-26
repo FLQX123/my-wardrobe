@@ -231,10 +231,10 @@ export default function Canvas({
   }, [selectedIds, selectedClothes, onBatchPositionChange, onClothPositionChange])
 
   const touchResizeStyles = {
-    bottomLeft: { width: 32, height: 32 },
-    bottomRight: { width: 32, height: 32 },
-    topLeft: { width: 32, height: 32 },
-    topRight: { width: 32, height: 32 },
+    bottomLeft: { width: 32, height: 32, touchAction: 'none' },
+    bottomRight: { width: 32, height: 32, touchAction: 'none' },
+    topLeft: { width: 32, height: 32, touchAction: 'none' },
+    topRight: { width: 32, height: 32, touchAction: 'none' },
   }
 
   const handleClass = 'react-rnd-handle'
