@@ -1,7 +1,7 @@
 // Service Worker for "我的虚拟衣橱" PWA
 // Stale-While-Revalidate: serve cached instantly, update cache in background
 
-const CACHE_NAME = 'mywardrobe-v5'
+const CACHE_NAME = 'mywardrobe-v6'
 
 // Install: pre-cache the app shell
 self.addEventListener('install', (event) => {

@@ -8,7 +8,7 @@ import App from './App.jsx'
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   let swReady = false
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js', { scope: '/' }).then(
+    navigator.serviceWorker.register('/my-wardrobe/sw.js', { scope: '/my-wardrobe/' }).then(
       (registration) => {
         console.log('[PWA] Service Worker registered:', registration.scope)
         // If this is a new installation (no active SW yet), prompt to refresh
