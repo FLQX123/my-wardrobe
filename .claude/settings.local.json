@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(git checkout *)",
+      "Bash(git rm *)",
+      "Bash(cp dist/index.html dist/manifest.json dist/sw.js .)",
+      "Bash(cp -r dist/assets .)",
+      "Bash(cp -r dist/icons .)"
+    ]
+  }
+}
