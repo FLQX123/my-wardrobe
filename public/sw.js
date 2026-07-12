@@ -1,7 +1,7 @@
 // Service Worker for "我的虚拟衣橱" PWA
 // Stale-While-Revalidate: serve cached instantly, update cache in background
 
-const CACHE_NAME = 'mywardrobe-v8'
+const CACHE_NAME = 'mywardrobe-v9'
 
 // Install: pre-cache the app shell
 self.addEventListener('install', (event) => {
@@ -38,15 +38,23 @@ self.addEventListener('fetch', (event) => {
       request.url.includes('hot-update')) return
   if (!request.url.startsWith(self.location.origin)) return
 
-  // For navigation requests (HTML): Cache-First, network fallback
+  // For navigation requests: always return cached index.html, network fallback
   if (request.mode === 'navigate') {
     event.respondWith(
       caches.match(request).then((cached) => {
-        return cached || fetch(request).then((response) => {
-          const cloned = response.clone()
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, cloned))
-          return response
+        return cached || caches.match('/my-wardrobe/').then((rootCached) => {
+          return rootCached || fetch(request).then((response) => {
+            const cloned = response.clone()
+            caches.open(CACHE_NAME).then((cache) => cache.put('/my-wardrobe/', cloned))
+            return response
+          })
         })
+      }).catch(() => {
+        // Absolute last resort: return a simple offline page
+        return new Response(
+          '<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>需要网络</title></head><body style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;background:#f8f4ed"><p>请连接网络后刷新</p></body></html>',
+          { headers: { 'Content-Type': 'text/html; charset=utf-8' } }
+        )
       })
     )
     return
