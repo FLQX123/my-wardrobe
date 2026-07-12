@@ -5,7 +5,8 @@ import App from './App.jsx'
 
 // Register Service Worker for PWA (localhost is exempt from HTTPS requirement)
 // Only register in production to avoid caching stale dev files
-if ('serviceWorker' in navigator && import.meta.env.PROD) {
+// [DEBUG] Service Worker temporarily disabled to isolate connectivity issue
+if (false && 'serviceWorker' in navigator && import.meta.env.PROD) {
   let swReady = false
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/my-wardrobe/sw.js', { scope: '/my-wardrobe/' }).then(
