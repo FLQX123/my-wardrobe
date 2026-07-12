@@ -1,7 +1,7 @@
 // Service Worker for "我的虚拟衣橱" PWA
 // Stale-While-Revalidate: serve cached instantly, update cache in background
 
-const CACHE_NAME = 'mywardrobe-v6'
+const CACHE_NAME = 'mywardrobe-v8'
 
 // Install: pre-cache the app shell
 self.addEventListener('install', (event) => {
@@ -38,14 +38,25 @@ self.addEventListener('fetch', (event) => {
       request.url.includes('hot-update')) return
   if (!request.url.startsWith(self.location.origin)) return
 
-  // For navigation requests (HTML): Network-First, fallback to cache
+  // For navigation requests (HTML): Cache-First, network fallback
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request).then((response) => {
-        const cloned = response.clone()
-        caches.open(CACHE_NAME).then((cache) => cache.put(request, cloned))
-        return response
-      }).catch(() => caches.match(request))
+      caches.match(request).then((cached) => {
+        if (cached) {
+          // Background update
+          fetch(request).then((response) => {
+            if (response && response.status === 200) {
+              caches.open(CACHE_NAME).then((cache) => cache.put(request, response))
+            }
+          }).catch(() => {})
+          return cached
+        }
+        return fetch(request).then((response) => {
+          const cloned = response.clone()
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, cloned))
+          return response
+        })
+      })
     )
     return
   }
